@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trollbook - Sign Up</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="logo logo-sm">trollbook</div>
+
+  <div class="card card-wide">
+    <h1>Create a new account</h1>
+    <p class="sub">It's quick and easy.</p>
+
+    <form id="signupForm">
+
+      <div class="name-row">
+        <input type="text" id="fname" placeholder="First name" required>
+        <input type="text" id="lname" placeholder="Surname" required>
+      </div>
+
+      <input type="email" id="email" placeholder="Email address" required>
+      <input type="password" id="password" placeholder="New password" required minlength="6">
+      <input type="password" id="confirm" placeholder="Confirm password" required>
+
+      <p class="field-label">Date of birth</p>
+      <div class="dob-row">
+        <select id="day"><option value="">Day</option></select>
+        <select id="month">
+          <option value="">Month</option>
+          <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option>
+          <option>May</option><option>Jun</option><option>Jul</option><option>Aug</option>
+          <option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+        </select>
+        <select id="year"><option value="">Year</option></select>
+      </div>
+
+      <p class="field-label">Gender</p>
+      <div class="gender-row">
+        <label>Female <input type="radio" name="gender" value="female"></label>
+        <label>Male   <input type="radio" name="gender" value="male"></label>
+        <label>Custom <input type="radio" name="gender" value="custom"></label>
+      </div>
+
+      <p class="policy">
+        By clicking Sign Up, you agree to our <a href="#">Terms</a>,
+        <a href="#">Privacy Policy</a> and <a href="#">Cookies Policy</a>.
+      </p>
+
+      <p id="msg" class="msg error"></p>
+
+      <button class="btn-green" type="submit" id="signupBtn">Sign Up</button>
+
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="index.html">Log in</a>
+    </div>
+  </div>
+
+  <script>
+    // !! Replace with your Render URL after deploying !!
+    var BACKEND = 'https://YOUR-APP-NAME.onrender.com'
+
+    // Fill Day & Year dropdowns
+    var dayEl = document.getElementById('day')
+    for (var d = 1; d <= 31; d++) {
+      dayEl.innerHTML += '<option>' + d + '</option>'
+    }
+    var yearEl = document.getElementById('year')
+    for (var y = new Date().getFullYear(); y >= 1924; y--) {
+      yearEl.innerHTML += '<option>' + y + '</option>'
+    }
+
+    var form      = document.getElementById('signupForm')
+    var msg       = document.getElementById('msg')
+    var signupBtn = document.getElementById('signupBtn')
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault()
+      msg.style.display = 'none'
+
+      var password = document.getElementById('password').value
+      var confirm  = document.getElementById('confirm').value
+
+      if (password !== confirm) {
+        msg.textContent   = 'Passwords do not match'
+        msg.style.display = 'block'
+        return
+      }
+
+      var gender = document.querySelector('input[name="gender"]:checked')
+
+      signupBtn.textContent = 'Creating account...'
+      signupBtn.disabled    = true
+
+      try {
+        var res = await fetch(BACKEND + '/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firstName: document.getElementById('fname').value,
+            lastName:  document.getElementById('lname').value,
+            email:     document.getElementById('email').value,
+            password:  password,
+            dob:       document.getElementById('day').value + ' ' + document.getElementById('month').value + ' ' + document.getElementById('year').value,
+            gender:    gender ? gender.value : ''
+          })
+        })
+
+        var data = await res.json()
+
+        if (data.success) {
+          localStorage.setItem('loggedInUser', data.name)
+          window.location.href = 'welcome.html'
+        } else {
+          msg.textContent   = data.error
+          msg.style.display = 'block'
+        }
+      } catch (err) {
+        msg.textContent   = 'Could not connect to server. Try again.'
+        msg.style.display = 'block'
+      }
+
+      signupBtn.textContent = 'Sign Up'
+      signupBtn.disabled    = false
+    })
+  </script>
+
+</body>
+</html>

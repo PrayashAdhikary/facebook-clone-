@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trollbook - Welcome</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="welcome-box">
+    <span class="logo">trollbook</span>
+
+    <h2>Welcome, <span id="userName">friend</span>! 👋</h2>
+
+    <p>This is a project given by <strong>RT Sir</strong>.</p>
+    <p>It is presented by <strong>Sanoj Shah</strong>.</p>
+
+    <p class="teacher">Built with HTML · CSS · JavaScript · Node.js · MongoDB</p>
+
+    <a class="logout" href="index.html" id="logoutBtn">Log Out</a>
+  </div>
+
+  <script>
+    // Show the logged in user's name
+    var name = localStorage.getItem('loggedInUser')
+    if (name) {
+      document.getElementById('userName').textContent = name
+    }
+
+    // Clear on logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('loggedInUser')
+    })
+  </script>
+
+</body>
+</html>
